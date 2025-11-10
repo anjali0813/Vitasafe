@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vitasafe/login.dart';
 import 'package:vitasafe/register.dart';
 
 void main() {
