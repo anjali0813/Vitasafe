@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vitasafe/login.dart';
 import 'package:vitasafe/register.dart';
 
 void main() {
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: RegisterScreen()
+      home: LoginScreen()
     );
   }
 }

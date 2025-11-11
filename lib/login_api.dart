@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:vitasafe/homepage.dart';
 import 'package:vitasafe/reg_api.dart';
 
 int? lid;
@@ -11,7 +12,7 @@ Future<void> loginuser({
 }) async {
   try {
     final response = await dio.post(
-      'login/',
+      '$baseurl/User_Login',
       data: {
       'Username': username,
       'Password': password,
@@ -20,7 +21,7 @@ Future<void> loginuser({
     print(response.data);
 
     if(response.statusCode == 200) {
-        lid = response.data['login_id];
+        lid = response.data['login_id'];
         if(response.data['UserType']=='USER'){
           Navigator.pushAndRemoveUntil(
             context,
@@ -30,7 +31,7 @@ Future<void> loginuser({
         } else {
         Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => VolunteerHome()),
+        MaterialPageRoute(builder: (context) => HomePage()),
         (route) => false,
         );
         }

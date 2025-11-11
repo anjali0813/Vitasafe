@@ -3,15 +3,16 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
-String baseurl = 'http://192.168.1.153:5000';
+String baseurl = 'http://192.168.1.144:5000';
 Dio dio = Dio();
 
 Future<String?> registerUser({
   required String name,
   required String dob,
   required String gender,
-  required String medicalhistory,
+  // required String medicalhistory,
   required String email,
+  required String password,
   required String address,
   required String contacno,
   required File? photo,
@@ -22,15 +23,17 @@ Future<String?> registerUser({
       'Name':name,
       'Dob':dob,
       'Gender':gender,
-      'MedicalHistory':medicalhistory,
+      // 'MedicalHistory':medicalhistory,
       'Email':email,
       'Address':address,
+      'Username': email,
+      'Password': password,
       'Contact_no':contacno,
       if(photo !=null)
       'Photo': await MultipartFile.fromFile(photo.path, filename: photo.path.split('/').last),
     });
 
-    final response = await dio.post('usereg', data:formData);
+    final response = await dio.post('$baseurl/User_Registration', data:formData);
 
     if(response.statusCode == 200 || response.statusCode == 201)
     {

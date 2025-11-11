@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:vitasafe/login_api.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+   LoginScreen({super.key});
+
+  TextEditingController username = TextEditingController();
+  TextEditingController password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +22,7 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
+                controller: username,
                 decoration: InputDecoration(
                   labelText: 'Username',
                   border: OutlineInputBorder(
@@ -27,6 +32,7 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: 20,),
               TextFormField(
+                controller: password,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(
@@ -35,7 +41,9 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              ElevatedButton(onPressed: (){}, child: Text('LOGIN')),
+              ElevatedButton(onPressed: (){
+                loginuser(username: username.text, password: password.text,context: context);
+              }, child: Text('LOGIN')),
               TextButton(onPressed: (){}, child: Text('Don\'t have an account ! REGISTER'))
             ],
           ),
