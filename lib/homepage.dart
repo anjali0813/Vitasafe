@@ -1,11 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:vitasafe/hospitalview.dart';
+
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  /// Handles navigation based on feature name
   void _onTapFeature(BuildContext context, String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Tapped: $feature')),
+    Widget? targetPage;
+
+    switch (feature) {
+      case 'Book Vehicle':
+        targetPage = const HospitalView();
+        break;
+      case 'Book Doctor':
+        targetPage = const HospitalView();
+        break;
+      case 'View Booking Histories':
+        targetPage = const HospitalView();
+        break;
+      case 'Notifications':
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Opening Notifications...')),
+        );
+        return;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Tapped: $feature')),
+        );
+        return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => targetPage!),
     );
   }
 

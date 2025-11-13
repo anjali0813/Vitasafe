@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vitasafe/login_api.dart';
+import 'package:vitasafe/register.dart';
 
 class LoginScreen extends StatelessWidget {
    LoginScreen({super.key});
@@ -44,7 +45,9 @@ class LoginScreen extends StatelessWidget {
               ElevatedButton(onPressed: (){
                 loginuser(username: username.text, password: password.text,context: context);
               }, child: Text('LOGIN')),
-              TextButton(onPressed: (){}, child: Text('Don\'t have an account ! REGISTER'))
+              TextButton(onPressed: (){
+                Navigator.push(context,MaterialPageRoute(builder: (context) => RegisterScreen(),));
+              }, child: Text('Don\'t have an account ! REGISTER'))
             ],
           ),
         ),
