@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vitasafe/Doctorview.dart';
 import 'package:vitasafe/reg_api.dart';
 
 class HospitalView extends StatefulWidget {
@@ -142,30 +143,42 @@ class _HospitalViewState extends State<HospitalView> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: ListTile(
-                        title: Text(
-                          hospital['HospitalName'] ?? 'Unnamed Hospital',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.redAccent,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(hospital['Email'] ?? ''),
-                            Text('Phone: ${hospital['Contact_no'] ?? 'N/A'}'),
-                            Text('Address: ${hospital['Address'] ?? ''}'),
-                            Text(
-                              'Distance: ${hospital['distance']?.toStringAsFixed(2)} km',
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.call, color: Colors.green),
-                          onPressed: () => _callHospital(hospital['contact_no']),
-                        ),
-                      ),
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HospitalDoctorsPage(
+          hospitalId: hospital['id'],   // adjust field name if needed
+          hospitalName: hospital['HospitalName'] ?? 'Hospital',
+        ),
+      ),
+    );
+  },
+  title: Text(
+    hospital['HospitalName'] ?? 'Unnamed Hospital',
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      color: Colors.redAccent,
+    ),
+  ),
+  subtitle: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(hospital['Email'] ?? ''),
+      Text('Phone: ${hospital['Contact_no'] ?? 'N/A'}'),
+      Text('Address: ${hospital['Address'] ?? ''}'),
+      Text(
+        'Distance: ${hospital['distance']?.toStringAsFixed(2)} km',
+        style: const TextStyle(color: Colors.grey),
+      ),
+    ],
+  ),
+  trailing: IconButton(
+    icon: const Icon(Icons.call, color: Colors.green),
+    onPressed: () => _callHospital(hospital['Contact_no']),
+  ),
+)
+
                     );
                   },
                 ),
