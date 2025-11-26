@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:vitasafe/BedBook.dart';
+import 'package:vitasafe/Doctorbook.dart';
+import 'package:vitasafe/VehicleBook.dart';
+import 'package:vitasafe/homepage.dart';
 import 'package:vitasafe/login.dart';
 import 'package:vitasafe/register.dart';
+import 'package:vitasafe/vehicleview.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,7 +38,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: LoginScreen()
+      home:BedBookPage()
     );
   }
 }

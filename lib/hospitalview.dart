@@ -171,6 +171,10 @@ class _HospitalViewState extends State<HospitalView> {
         'Distance: ${hospital['distance']?.toStringAsFixed(2)} km',
         style: const TextStyle(color: Colors.grey),
       ),
+      TextButton(onPressed: (){},
+      child: Text("BED-BOOK", style: TextStyle(color: Colors.black)),
+      style: TextButton.styleFrom(backgroundColor: Colors.grey),
+      )
     ],
   ),
   trailing: IconButton(

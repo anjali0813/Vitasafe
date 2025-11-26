@@ -76,9 +76,9 @@ class _DoctorBookingPageState extends State<DoctorBookingPage> {
       }
     } catch (e) {
       debugPrint("Booking error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Booking failed")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Booking failed")));
     }
 
     setState(() => isSubmitting = false);
@@ -99,16 +99,20 @@ class _DoctorBookingPageState extends State<DoctorBookingPage> {
             // Doctor Header
             Text(
               widget.doctorName,
-              style: const TextStyle(
-                  fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            Text(widget.specialization,
-                style: const TextStyle(fontSize: 16, color: Colors.grey)),
+            Text(
+              widget.specialization,
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
+            ),
             const SizedBox(height: 20),
 
             // Date Picker
             ListTile(
-              leading: const Icon(Icons.calendar_month, color: Colors.redAccent),
+              leading: const Icon(
+                Icons.calendar_month,
+                color: Colors.redAccent,
+              ),
               title: Text(
                 selectedDate == null
                     ? "Select Date"
@@ -117,16 +121,16 @@ class _DoctorBookingPageState extends State<DoctorBookingPage> {
               onTap: pickDate,
             ),
 
-            // Time Picker
-            // ListTile(
-            //   leading: const Icon(Icons.access_time, color: Colors.redAccent),
-            //   title: Text(
-            //     selectedTime == null
-            //         ? "Select Time"
-            //         : selectedTime!.format(context),
-            //   ),
-            //   onTap: pickTime,
-            // ),
+            //  Time Picker
+            ListTile(
+              leading: const Icon(Icons.access_time, color: Colors.redAccent),
+              title: Text(
+                selectedTime == null
+                    ? "Select Time"
+                    : selectedTime!.format(context),
+              ),
+              onTap: pickTime,
+            ),
 
             const SizedBox(height: 30),
 
@@ -136,7 +140,9 @@ class _DoctorBookingPageState extends State<DoctorBookingPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
                   padding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 30),
+                    vertical: 12,
+                    horizontal: 30,
+                  ),
                 ),
                 onPressed: isSubmitting ? null : bookAppointment,
                 child: isSubmitting
