@@ -7,6 +7,7 @@ import 'package:vitasafe/blood_donation.dart';
 import 'package:vitasafe/emergency_support.dart';
 import 'package:vitasafe/homepage.dart';
 import 'package:vitasafe/login.dart';
+import 'package:vitasafe/medical_emergency.dart';
 import 'package:vitasafe/public.dart';
 import 'package:vitasafe/register.dart';
 import 'package:vitasafe/vehiclebookinghistory.dart';

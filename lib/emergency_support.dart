@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:vitasafe/emergency_reporting.dart';
+import 'package:vitasafe/fire_accident.dart';
+import 'package:vitasafe/medical_emergency.dart';
+import 'package:vitasafe/naturali_disaster_support.dart';
 import 'package:vitasafe/public.dart';
 
 // Dummy page placeholders for navigation
@@ -125,7 +129,7 @@ class VolunteerEmergencySupportPage extends StatelessWidget {
 
                   buildEmergencyCard(
                     context: context,
-                    route: ,
+                    route: MedicalEmergencyPage(),
                     title: "Medical Emergency",
                     description: "Provide first aid and guide patients to nearest hospital.",
                     icon: Icons.local_hospital,
@@ -134,7 +138,7 @@ class VolunteerEmergencySupportPage extends StatelessWidget {
 
                   buildEmergencyCard(
                     context: context,
-                    route: ,
+                    route: FireAccidentPage(),
                     title: "Fire Accident",
                     description: "Assist people during fire incidents and alert fire services.",
                     icon: Icons.fire_truck,
@@ -143,7 +147,7 @@ class VolunteerEmergencySupportPage extends StatelessWidget {
 
                   buildEmergencyCard(
                     context: context,
-                    route: ,
+                    route: NaturalDisasterPage(),
                     title: "Natural Disaster Support",
                     description: "Help with rescue, relief distribution, and crowd management.",
                     icon: Icons.flood,
@@ -152,7 +156,7 @@ class VolunteerEmergencySupportPage extends StatelessWidget {
 
                   buildEmergencyCard(
                     context: context,
-                    route: ,
+                    route: EmergencyReportingPage(),
                     title: "Emergency Reporting",
                     description: "Report emergencies with location details instantly.",
                     icon: Icons.location_on,
