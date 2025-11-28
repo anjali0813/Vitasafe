@@ -2,10 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:vitasafe/BedBook.dart';
 import 'package:vitasafe/Doctorbook.dart';
 import 'package:vitasafe/VehicleBook.dart';
+import 'package:vitasafe/bedbookinghistory.dart';
+import 'package:vitasafe/blood_donation.dart';
+import 'package:vitasafe/emergency_support.dart';
 import 'package:vitasafe/homepage.dart';
 import 'package:vitasafe/login.dart';
+import 'package:vitasafe/public.dart';
 import 'package:vitasafe/register.dart';
+import 'package:vitasafe/vehiclebookinghistory.dart';
 import 'package:vitasafe/vehicleview.dart';
+import 'package:vitasafe/volunteer.dart';
+import 'package:vitasafe/volunteer_feedback&ratings.dart';
+import 'package:vitasafe/volunteer_home.dart';
+import 'package:vitasafe/volunteer_notifications.dart';
+import 'package:vitasafe/volunteer_registration.dart';
+import 'package:vitasafe/volunteer_taskassignment.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,7 +49,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home:BedBookPage()
+      home: VolunteerEmergencySupportPage()
     );
   }
 }

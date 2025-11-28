@@ -8,6 +8,22 @@ class BedBookPage extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<BedBookPage> {
+  DateTime? selectedDate;
+  bool isSubmitting = false;
+
+  Future<void> pickDate() async {
+    DateTime? date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2030),
+    );
+
+    if (date != null) {
+      setState(() => selectedDate = date);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,8 +42,20 @@ class _MyWidgetState extends State<BedBookPage> {
             ),
           ),
 
+          // Date Picker
+             ListTile(
+              leading: const Icon(
+                Icons.calendar_month,
+                color: Colors.redAccent,
+              ),
+              title: Text(
+                selectedDate == null
+                    ? "Select Date"
+                    : "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}",
+              ),
+              onTap: pickDate,
+            ),
 
-          
           TextButton(
             onPressed: () {},
             child: Text("BOOK", style: TextStyle(color: Colors.black)),
