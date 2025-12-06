@@ -5,15 +5,16 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vitasafe/Doctorview.dart';
 import 'package:vitasafe/reg_api.dart';
+import 'package:vitasafe/vehicleview.dart';
 
-class HospitalView extends StatefulWidget {
-  const HospitalView({Key? key}) : super(key: key);
+class NearbyhospitalAmbulance extends StatefulWidget {
+  const NearbyhospitalAmbulance({Key? key}) : super(key: key);
 
   @override
-  State<HospitalView> createState() => _HospitalViewState();
+  State<NearbyhospitalAmbulance> createState() => _NearbyhospitalAmbulanceState();
 }
 
-class _HospitalViewState extends State<HospitalView> {
+class _NearbyhospitalAmbulanceState extends State<NearbyhospitalAmbulance> {
   List<dynamic> hospitals = [];
   bool isLoading = true;
   late Position userPosition;
@@ -147,7 +148,7 @@ class _HospitalViewState extends State<HospitalView> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => HospitalDoctorsPage(
+        builder: (context) => AmbulanceListPage(
           hospitalId: hospital['id'],   // adjust field name if needed
           hospitalName: hospital['HospitalName'] ?? 'Hospital',
         ),

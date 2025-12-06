@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:vitasafe/Doctorview.dart';
+import 'package:vitasafe/VehicleBook.dart';
+import 'package:vitasafe/doctorbookinghistory.dart';
 import 'package:vitasafe/hospitalview.dart';
+import 'package:vitasafe/vehiclebookinghistory.dart';
+import 'package:vitasafe/vehicleview.dart';
+import 'package:vitasafe/viewhospitalbed.dart';
+import 'package:vitasafe/viewhospitalsambulance.dart';
 
 
 class HomePage extends StatelessWidget {
@@ -11,13 +18,19 @@ class HomePage extends StatelessWidget {
 
     switch (feature) {
       case 'Book Vehicle':
-        targetPage = const HospitalView();
+        targetPage = const NearbyhospitalAmbulance();
         break;
       case 'Book Doctor':
         targetPage = const HospitalView();
         break;
-      case 'View Booking Histories':
-        targetPage = const HospitalView();
+      case 'Book Bed':
+        targetPage = const NearbyhospitalBed();
+        break;
+      case 'View doctor booking history':
+        targetPage = const DoctorBookingHistoryPage();
+        break;
+      case 'View vehicle booking history':
+        targetPage = const VehicleBookingHistoryPage();
         break;
       case 'Notifications':
         ScaffoldMessenger.of(context).showSnackBar(
@@ -149,7 +162,11 @@ class HomePage extends StatelessWidget {
                 _buildFeatureCard(
                     context, Icons.local_hospital, 'Book Doctor', Colors.indigo),
                 _buildFeatureCard(context, Icons.history,
-                    'View Booking Histories', Colors.orange),
+                    'Book Bed', Colors.orange),
+
+                _buildFeatureCard(context, Icons.history, 'View doctor booking history', Colors.yellow),
+                _buildFeatureCard(context, Icons.history,
+                    'View vehicle booking history', Colors.orange),
               ],
             ),
             const SizedBox(height: 24),

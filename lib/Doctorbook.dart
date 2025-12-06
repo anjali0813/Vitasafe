@@ -68,7 +68,7 @@ class _DoctorBookingPageState extends State<DoctorBookingPage> {
         },
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode ==201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Appointment Booked Successfully!")),
         );

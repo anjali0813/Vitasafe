@@ -5,15 +5,17 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vitasafe/Doctorview.dart';
 import 'package:vitasafe/reg_api.dart';
+import 'package:vitasafe/vehicleview.dart';
+import 'package:vitasafe/viewbeds.dart';
 
-class HospitalView extends StatefulWidget {
-  const HospitalView({Key? key}) : super(key: key);
+class NearbyhospitalBed extends StatefulWidget {
+  const NearbyhospitalBed({Key? key}) : super(key: key);
 
   @override
-  State<HospitalView> createState() => _HospitalViewState();
+  State<NearbyhospitalBed> createState() => _NearbyhospitalBedState();
 }
 
-class _HospitalViewState extends State<HospitalView> {
+class _NearbyhospitalBedState extends State<NearbyhospitalBed> {
   List<dynamic> hospitals = [];
   bool isLoading = true;
   late Position userPosition;
@@ -144,16 +146,17 @@ class _HospitalViewState extends State<HospitalView> {
                       ),
                       child: ListTile(
   onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HospitalDoctorsPage(
-          hospitalId: hospital['id'],   // adjust field name if needed
-          hospitalName: hospital['HospitalName'] ?? 'Hospital',
-        ),
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => BedListPage(
+        hospitalId: hospital['id'],
+        hospitalName: hospital['HospitalName'],
       ),
-    );
-  },
+    ),
+  );
+},
+
   title: Text(
     hospital['HospitalName'] ?? 'Unnamed Hospital',
     style: const TextStyle(
