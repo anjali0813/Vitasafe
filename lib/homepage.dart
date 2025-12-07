@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:vitasafe/Doctorview.dart';
 import 'package:vitasafe/VehicleBook.dart';
+import 'package:vitasafe/bedbookinghistory.dart';
+import 'package:vitasafe/complaint.dart';
 import 'package:vitasafe/doctorbookinghistory.dart';
 import 'package:vitasafe/hospitalview.dart';
+import 'package:vitasafe/login.dart';
 import 'package:vitasafe/vehiclebookinghistory.dart';
 import 'package:vitasafe/vehicleview.dart';
 import 'package:vitasafe/viewhospitalbed.dart';
@@ -32,6 +35,12 @@ class HomePage extends StatelessWidget {
       case 'View vehicle booking history':
         targetPage = const VehicleBookingHistoryPage();
         break;
+      case 'View bed booking history':
+      targetPage = const BedBookingHistoryPage();
+      break;
+      case 'Complaints':
+      targetPage = ComplaintPage();
+      break;
       case 'Notifications':
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Opening Notifications...')),
@@ -102,41 +111,45 @@ class HomePage extends StatelessWidget {
             icon: const Icon(Icons.notifications),
             onPressed: () => _onTapFeature(context, 'Notifications'),
           ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginScreen(),), (route)=>false),
+          ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: Colors.teal),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 28,
-                    child: Icon(Icons.person, size: 40, color: Colors.teal),
-                  ),
-                  SizedBox(height: 10),
-                  Text('Welcome, User!',
-                      style: TextStyle(color: Colors.white, fontSize: 20)),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.help_outline),
-              title: const Text('Help & Support'),
-              onTap: () {},
-            ),
-          ],
-        ),
-      ),
+      // drawer: Drawer(
+      //   child: ListView(
+      //     padding: EdgeInsets.zero,
+      //     children: [
+      //       DrawerHeader(
+      //         decoration: const BoxDecoration(color: Colors.teal),
+      //         child: Column(
+      //           crossAxisAlignment: CrossAxisAlignment.start,
+      //           children: const [
+      //             CircleAvatar(
+      //               backgroundColor: Colors.white,
+      //               radius: 28,
+      //               child: Icon(Icons.person, size: 40, color: Colors.teal),
+      //             ),
+      //             SizedBox(height: 10),
+      //             Text('Welcome, User!',
+      //                 style: TextStyle(color: Colors.white, fontSize: 20)),
+      //           ],
+      //         ),
+      //       ),
+      //       ListTile(
+      //         leading: const Icon(Icons.settings),
+      //         title: const Text('Settings'),
+      //         onTap: () {},
+      //       ),
+      //       ListTile(
+      //         leading: const Icon(Icons.help_outline),
+      //         title: const Text('Help & Support'),
+      //         onTap: () {},
+      //       ),
+      //     ],
+      //   ),
+      // ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -167,27 +180,31 @@ class HomePage extends StatelessWidget {
                 _buildFeatureCard(context, Icons.history, 'View doctor booking history', Colors.yellow),
                 _buildFeatureCard(context, Icons.history,
                     'View vehicle booking history', Colors.orange),
+                _buildFeatureCard(context, Icons.history,
+                    'View bed booking history', Colors.orange),
+                _buildFeatureCard(context, Icons.history,
+                    'Complaints', Colors.orange),
               ],
             ),
-            const SizedBox(height: 24),
+            // const SizedBox(height: 24),
 
-            // --- Recent Bookings Section ---
-            Text('Recent Bookings',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            _buildRecentBooking(
-              'Vehicle: Taxi to Airport',
-              'Booked on 8 Nov 2025 • Status: Confirmed',
-              Icons.directions_car,
-            ),
-            _buildRecentBooking(
-              'Doctor: Dr. Jane Smith (Cardiologist)',
-              'Booked on 6 Nov 2025 • Status: Completed',
-              Icons.local_hospital,
-            ),
+            // // --- Recent Bookings Section ---
+            // Text('Recent Bookings',
+            //     style: Theme.of(context)
+            //         .textTheme
+            //         .titleMedium
+            //         ?.copyWith(fontWeight: FontWeight.bold)),
+            // const SizedBox(height: 8),
+            // _buildRecentBooking(
+            //   'Vehicle: Taxi to Airport',
+            //   'Booked on 8 Nov 2025 • Status: Confirmed',
+            //   Icons.directions_car,
+            // ),
+            // _buildRecentBooking(
+            //   'Doctor: Dr. Jane Smith (Cardiologist)',
+            //   'Booked on 6 Nov 2025 • Status: Completed',
+            //   Icons.local_hospital,
+            // ),
           ],
         ),
       ),

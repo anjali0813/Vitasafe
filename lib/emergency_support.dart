@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vitasafe/emergency_reporting.dart';
 import 'package:vitasafe/fire_accident.dart';
 import 'package:vitasafe/medical_emergency.dart';
-import 'package:vitasafe/naturali_disaster_support.dart';
+import 'package:vitasafe/natural_disaster_support.dart';
 import 'package:vitasafe/public.dart';
 
 // Dummy page placeholders for navigation

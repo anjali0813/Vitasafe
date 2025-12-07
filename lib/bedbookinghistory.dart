@@ -1,22 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:vitasafe/login_api.dart';
+import 'package:vitasafe/reg_api.dart'; // contains dio & lid
 
-class BedBookingHistoryPage extends StatelessWidget {
-  final List<Map<String, dynamic>> historyList = [
-    {
-      'hospital': 'City Hospital',
-      'date': '2025-01-12',
-      'bedType': 'ICU',
-      'status': 'Confirmed',
-    },
-    {
-      'hospital': 'Green Valley Medical Center',
-      'date': '2025-02-01',
-      'bedType': 'General Ward',
-      'status': 'Cancelled',
-    },
-  ];
+class BedBookingHistoryPage extends StatefulWidget {
+  const BedBookingHistoryPage({super.key});
 
-  BedBookingHistoryPage({super.key});
+  @override
+  State<BedBookingHistoryPage> createState() => _BedBookingHistoryPageState();
+}
+
+class _BedBookingHistoryPageState extends State<BedBookingHistoryPage> {
+
+  Future<List<dynamic>> fetchBedBookingHistory() async {
+    try {
+      final response = await dio.get('$baseurl/bedbooking_history/$lid');
+      print(response.data);
+      if (response.statusCode == 200) {
+        return response.data as List;
+      } else {
+        throw Exception('Failed to load booking history');
+      }
+    } catch (e) {
+      debugPrint("Error fetching booking history: $e");
+      throw Exception("Error fetching history");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,57 +33,83 @@ class BedBookingHistoryPage extends StatelessWidget {
         title: const Text("Bed Booking History"),
         backgroundColor: Colors.redAccent,
       ),
-      body: historyList.isEmpty
-          ? const Center(
+
+      body: FutureBuilder<List<dynamic>>(
+        future: fetchBedBookingHistory(),
+        builder: (context, snapshot) {
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text("Error loading history"),
+            );
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(
               child: Text(
                 "No booking history found.",
                 style: TextStyle(fontSize: 16),
               ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: historyList.length,
-              itemBuilder: (context, index) {
-                final item = historyList[index];
+            );
+          }
 
-                return Card(
-                  elevation: 3,
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item['hospital'],
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueAccent,
-                          ),
+          final historyList = snapshot.data!;
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: historyList.length,
+            itemBuilder: (context, index) {
+              final item = historyList[index];
+
+              return Card(
+                elevation: 3,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item['hospital_name'] ?? "Unknown Hospital",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent,
                         ),
-                        const SizedBox(height: 8),
-                        Text("Bed Type: ${item['bedType']}",
-                            style: const TextStyle(fontSize: 15)),
-                        Text("Date: ${item['date']}",
-                            style: const TextStyle(fontSize: 15)),
-                        Text("Status: ${item['status']}",
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                              color: item['status'] == 'Confirmed'
-                                  ? Colors.green
-                                  : Colors.red,
-                            )),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      Text("Ward: ${item['ward']}",
+                          style: const TextStyle(fontSize: 15)),
+
+                      Text("Date: ${item['date']}",
+                          style: const TextStyle(fontSize: 15)),
+
+                      Text(
+                        "Status: ${item['Status']}",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: item['Status'] == 'Confirmed'
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

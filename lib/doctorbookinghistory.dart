@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:vitasafe/login_api.dart';
 import 'package:vitasafe/reg_api.dart';
+import 'package:vitasafe/review.dart';
 
 class DoctorBookingHistoryPage extends StatefulWidget {
 // USER LOGIN ID
@@ -27,6 +28,7 @@ class _DoctorBookingHistoryPageState extends State<DoctorBookingHistoryPage> {
     try {
       final response =
           await Dio().get("$baseurl/doctor_booking_history/$lid");
+          print(response.data);
 
       if (response.statusCode == 201) {
         setState(() {
@@ -90,6 +92,23 @@ class _DoctorBookingHistoryPageState extends State<DoctorBookingHistoryPage> {
                             Text("Status: ${item['Status']}"),
 
                             const SizedBox(height: 8),
+
+                            ElevatedButton(
+  onPressed: () {
+    print(item['Hosp_id'].runtimeType);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ReviewPage(
+          hospitalId: item['Hosp_id'],
+          hospitalName: item['Hosp_name'],
+        ),
+      ),
+    );
+  },
+  child: const Text("Give Review"),
+)
+
 
                             // Row(
                             //   mainAxisAlignment: MainAxisAlignment.end,
