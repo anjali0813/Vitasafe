@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:vitasafe/login_api.dart';
+import 'package:vitasafe/reg_api.dart';
 
 class BloodDonationVolunteerPage extends StatefulWidget {
   const BloodDonationVolunteerPage({super.key});
@@ -28,6 +30,68 @@ class _BloodDonationVolunteerPageState extends State<BloodDonationVolunteerPage>
       'time': 'Needed Tomorrow',
     }
   ];
+  
+  get selectedDate => null;
+  
+  Future<void> pickDate() async {
+    DateTime? date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2030),
+    );
+
+    if (date != null) {
+      setState(() => selectedDate = date);
+    }
+  }
+
+  Future<void> pickTime() async {
+    TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (time != null) {
+      setState(() => selectedTime = time);
+    }
+  }
+
+  Future<void> BloodDonationrequest() async {
+    if (selectedDate == null || selectedTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select date and time")),
+      );
+      return;
+    }
+
+    setState(() => isSubmitting = true);
+
+    try {
+      final response = await Dio().post(
+        "$baseurl/BloodDonation/$lid",
+        data: {
+          "DOCID": widget.doctorId,
+          "Date": selectedDate.toString().split(" ")[0],
+          // "Time": selectedTime!.format(context),
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode ==201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Appointment Booked Successfully!")),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      debugPrint("Booking error: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Booking failed")));
+    }
+
+    setState(() => isSubmitting = false);
+  }
 
   @override
   Widget build(BuildContext context) {

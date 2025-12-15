@@ -13,11 +13,14 @@ Future<String?> registerVolunteer({
     required File? photo,
     required String age,
     required String gender,
+    required String password,
     context,
   }) async {
     try {
       FormData formData = FormData.fromMap({
         'Name': name,
+        'Username':email,
+        'Password':password,
         'Email': email,
         'Phone': phone,
         'Address': address,

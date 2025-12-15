@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:vitasafe/blood_donation.dart';
+import 'package:vitasafe/emergency_support.dart';
+import 'package:vitasafe/volunteer.dart';
+import 'package:vitasafe/volunteer_feedback&ratings.dart';
+import 'package:vitasafe/volunteer_notifications.dart';
+import 'package:vitasafe/volunteer_taskassignment.dart';
 
 class VolunteerModulePage extends StatelessWidget {
   const VolunteerModulePage({super.key});
@@ -8,7 +14,7 @@ class VolunteerModulePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Volunteer Module"),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.red,
       ),
       body: GridView.count(
         crossAxisCount: 2,
@@ -20,37 +26,37 @@ class VolunteerModulePage extends StatelessWidget {
             context,
             title: "Profile Management",
             icon: Icons.person,
-            page: const PlaceholderPage(title: "Profile Management"),
+            page: VolunteerProfilePage(),
           ),
           _buildCard(
             context,
             title: "Task Assignment",
             icon: Icons.assignment,
-            page: const PlaceholderPage(title: "Task Assignment"),
+            page: VolunteerTaskAssignmentPage(),
           ),
-          _buildCard(
-            context,
-            title: "Emergency Support",
-            icon: Icons.warning,
-            page: const PlaceholderPage(title: "Emergency Support"),
-          ),
+          // _buildCard(
+          //   context,
+          //   title: "Emergency Support",
+          //   icon: Icons.warning,
+          //   page: VolunteerEmergencySupportPage(),
+          // ),
           _buildCard(
             context,
             title: "Notifications & Alerts",
             icon: Icons.notifications_active,
-            page: const PlaceholderPage(title: "Notifications & Alerts"),
+            page:VolunteerNotificationsPage(),
           ),
           _buildCard(
             context,
             title: "Blood Donation Volunteering",
             icon: Icons.bloodtype,
-            page: const PlaceholderPage(title: "Blood Donation Volunteering"),
+            page: BloodDonationVolunteerPage(),
           ),
           _buildCard(
             context,
             title: "Feedback & Ratings",
             icon: Icons.star_rate,
-            page: const PlaceholderPage(title: "Feedback & Ratings"),
+            page:VolunteerFeedbackPage(),
           ),
         ],
       ),

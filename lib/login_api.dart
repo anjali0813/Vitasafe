@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:vitasafe/homepage.dart';
 import 'package:vitasafe/reg_api.dart';
+import 'package:vitasafe/volunteer_home.dart';
 
 int? lid;
 Future<void> loginuser({
@@ -31,7 +32,7 @@ Future<void> loginuser({
         } else {
         Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => VolunteerModulePage()),
         (route) => false,
         );
         }

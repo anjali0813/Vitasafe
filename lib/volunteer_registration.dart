@@ -16,6 +16,8 @@ class _VolunteerRegistrationPageState extends State<VolunteerRegistrationPage> {
 
   TextEditingController Email = TextEditingController();
 
+  TextEditingController password=TextEditingController();
+
   TextEditingController Age = TextEditingController();
 
   String? selectedGender;
@@ -102,6 +104,17 @@ Future<void> _pickImage() async {
           
               ),
               SizedBox(height: 16),
+              
+              //password
+              TextFormField(
+                controller: password,
+                decoration: InputDecoration(
+                  labelText: "password",
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) => value!.isEmpty ? "Enter password" :null,
+                ),
+                SizedBox(height: 16),
 
               // Phone
               TextFormField(
@@ -197,7 +210,7 @@ SizedBox(height: 16),
                     if (_formKey.currentState!.validate()) {
 
 
-                      registerVolunteer(name: Name.text, email: Email.text, phone: Phone.text, address: Address.text, skills: Skills.text, photo: _image, age: Age.text, gender: selectedGender!);
+                      registerVolunteer(name: Name.text, email: Email.text, phone: Phone.text, address: Address.text, skills: Skills.text, photo: _image, age: Age.text, gender: selectedGender!,password: password.text);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("Registration submitted!")),
                       );
