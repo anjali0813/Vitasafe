@@ -1,9 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:vitasafe/login_api.dart';
 import 'package:vitasafe/reg_api.dart';
 
 class BloodDonationVolunteerPage extends StatefulWidget {
-  const BloodDonationVolunteerPage({super.key});
+  final int? volunteerId;
+  final String? bloodgroup;
+
+
+  const BloodDonationVolunteerPage({super.key, this.bloodgroup,required this.volunteerId});
 
   @override
   State<BloodDonationVolunteerPage> createState() => _BloodDonationVolunteerPageState();
@@ -31,7 +36,9 @@ class _BloodDonationVolunteerPageState extends State<BloodDonationVolunteerPage>
     }
   ];
   
-  get selectedDate => null;
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
+  bool isSubmitting = false;
   
   Future<void> pickDate() async {
     DateTime? date = await showDatePicker(
@@ -71,8 +78,8 @@ class _BloodDonationVolunteerPageState extends State<BloodDonationVolunteerPage>
       final response = await Dio().post(
         "$baseurl/BloodDonation/$lid",
         data: {
-          "DOCID": widget.doctorId,
-          "Date": selectedDate.toString().split(" ")[0],
+          "VolunteerID": widget.volunteerId,
+          "Bloodgroup": selectedDate.toString().split(" ")[0],
           // "Time": selectedTime!.format(context),
         },
       );

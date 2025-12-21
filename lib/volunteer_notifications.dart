@@ -1,10 +1,47 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:vitasafe/login_api.dart';
+import 'package:vitasafe/reg_api.dart';
 
-class VolunteerNotificationsPage extends StatelessWidget {
+class VolunteerNotificationsPage extends StatefulWidget {
   const VolunteerNotificationsPage({super.key});
 
   @override
+  State<VolunteerNotificationsPage> createState() => _VolunteerNotificationsPageState();
+}
+
+class _VolunteerNotificationsPageState extends State<VolunteerNotificationsPage> {
+
+
+ List alerts = [];
+  Future<void> fetchAlerts() async {
+    try {
+      final response = await dio.get('$baseurl/view_alerts');
+print(response.data);
+      if (response.statusCode == 200 && response.data is List) {
+        setState(() {
+          alerts = response.data;
+        
+        });
+      } else {
+      
+      }
+    } catch (e) {
+      debugPrint("Alert fetch error: $e");
+     
+    }
+  }
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchAlerts();
+  }
+
+  @override
   Widget build(BuildContext context) {
+ 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Notifications & Alerts"),

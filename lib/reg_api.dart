@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 
-String baseurl = 'http://192.168.1.42:5000';
+String baseurl = 'http://192.168.1.134:5000';
 Dio dio = Dio();
 
 Future<String?> registerUser({

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vitasafe/blood_donation.dart';
 import 'package:vitasafe/emergency_support.dart';
+import 'package:vitasafe/login_api.dart';
 import 'package:vitasafe/volunteer.dart';
 import 'package:vitasafe/volunteer_feedback&ratings.dart';
 import 'package:vitasafe/volunteer_notifications.dart';
@@ -50,7 +51,7 @@ class VolunteerModulePage extends StatelessWidget {
             context,
             title: "Blood Donation Volunteering",
             icon: Icons.bloodtype,
-            page: BloodDonationVolunteerPage(),
+            page: BloodDonationVolunteerPage(volunteerId: lid,),
           ),
           _buildCard(
             context,
