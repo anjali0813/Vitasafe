@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vitasafe/login_api.dart';
+import 'package:vitasafe/public.dart';
 import 'package:vitasafe/register.dart';
 import 'package:vitasafe/volunteer_registration.dart';
 
@@ -51,7 +52,10 @@ class LoginScreen extends StatelessWidget {
               }, child: Text('Do not have an account ! REGISTER')),
               TextButton(onPressed: (){
                 Navigator.push(context,MaterialPageRoute(builder: (context) => VolunteerRegistrationPage(),));
-              }, child: Text('Register as volunteer'))
+              }, child: Text('Register as volunteer')),
+              TextButton(onPressed: (){
+                Navigator.push(context,MaterialPageRoute(builder: (context) => AccidentAlertPage(),));
+              }, child: Text('Guest login'))
             ],
           ),
         ),

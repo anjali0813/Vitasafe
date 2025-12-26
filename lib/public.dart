@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:vitasafe/reg_api.dart'; // contains baseurl
 
 class AccidentAlertPage extends StatefulWidget {
   const AccidentAlertPage({super.key});
@@ -8,9 +11,103 @@ class AccidentAlertPage extends StatefulWidget {
 }
 
 class _AccidentAlertPageState extends State<AccidentAlertPage> {
-  final TextEditingController locationController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   bool isSubmitting = false;
+
+  final Dio dio = Dio();
+
+  double? latitude;
+  double? longitude;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentLocation();
+  }
+
+  /// Fetch current GPS location
+  Future<void> _fetchCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Location services are disabled.')),
+      );
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permissions are denied')),
+        );
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Location permissions are permanently denied')),
+      );
+      return;
+    }
+
+    final Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      latitude = position.latitude;
+      longitude = position.longitude;
+    });
+  }
+
+  /// Send alert to backend
+  Future<void> _submitAlert() async {
+    if (latitude == null || longitude == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Location not available.")),
+      );
+      return;
+    }
+
+    setState(() => isSubmitting = true);
+
+    try {
+      final response = await dio.post(
+        "$baseurl/alert",
+        data: {
+          "Alert": descriptionController.text.isEmpty
+              ? "Accident alert"
+              : descriptionController.text,
+          "Latitude": latitude,
+          "Longitude": longitude,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Accident alert sent successfully!")),
+        );
+        descriptionController.clear();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to send alert")),
+        );
+      }
+    } catch (e) {
+      debugPrint("Alert error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error sending alert")),
+      );
+    }
+
+    setState(() => isSubmitting = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +128,17 @@ class _AccidentAlertPageState extends State<AccidentAlertPage> {
             const SizedBox(height: 20),
 
             TextField(
-              controller: locationController,
+              readOnly: true,
               decoration: InputDecoration(
-                labelText: "Accident Location",
+                labelText: latitude != null && longitude != null
+                    ? "Current Location: $latitude, $longitude"
+                    : "Fetching location...",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
+                ),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.my_location),
+                  onPressed: _fetchCurrentLocation,
                 ),
               ),
             ),
@@ -64,7 +167,8 @@ class _AccidentAlertPageState extends State<AccidentAlertPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  textStyle: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -72,27 +176,5 @@ class _AccidentAlertPageState extends State<AccidentAlertPage> {
         ),
       ),
     );
-  }
-
-  Future<void> _submitAlert() async {
-    if (locationController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter the accident location.")),
-      );
-      return;
-    }
-
-    setState(() => isSubmitting = true);
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() => isSubmitting = false);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Accident alert sent successfully!")),
-    );
-
-    locationController.clear();
-    descriptionController.clear();
   }
 }

@@ -3,6 +3,7 @@ import 'package:vitasafe/Doctorview.dart';
 import 'package:vitasafe/VehicleBook.dart';
 import 'package:vitasafe/alertview.dart';
 import 'package:vitasafe/bedbookinghistory.dart';
+import 'package:vitasafe/bloodrequest.dart';
 import 'package:vitasafe/complaint.dart';
 import 'package:vitasafe/doctorbookinghistory.dart';
 import 'package:vitasafe/hospitalview.dart';
@@ -15,51 +16,6 @@ import 'package:vitasafe/viewhospitalsambulance.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  /// Handles navigation based on feature name
-  // void _onTapFeature(BuildContext context, String feature) {
-  //   Widget? targetPage;
-
-  //   switch (feature) {
-  //     case 'Book Vehicle':
-  //       targetPage = const NearbyhospitalAmbulance();
-  //       break;
-  //     case 'Book Doctor':
-  //       targetPage = const HospitalView();
-  //       break;
-  //     case 'Book Bed':
-  //       targetPage = const NearbyhospitalBed();
-  //       break;
-  //     case 'View doctor booking history':
-  //       targetPage = const DoctorBookingHistoryPage();
-  //       break;
-  //     case 'View vehicle booking history':
-  //       targetPage = const VehicleBookingHistoryPage();
-  //       break;
-  //     case 'View bed booking history':
-  //       targetPage = const BedBookingHistoryPage();
-  //       break;
-  //     case 'Complaints':
-  //       targetPage = ComplaintPage();
-  //       break;
-  //     case 'Notifications':
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text('Opening Notifications...')),
-  //       );
-  //       break;
-  //     case 'View Alert':
-  //     targetPage=AlertViewPage();
-       
-
-  //       return;
-  //     default:
-  //       ScaffoldMessenger.of(
-  //         context,
-  //       ).showSnackBar(SnackBar(content: Text('Tapped: $feature')));
-  //       return;
-  //   }
-
-  //   Navigator.push(context, MaterialPageRoute(builder: (_) => targetPage!));
-  // }
 
 
   void _onTapFeature(BuildContext context, String feature) {
@@ -103,6 +59,9 @@ class HomePage extends StatelessWidget {
     case 'View Alert':
       targetPage = const AlertViewPage();
       break;
+    case 'Blood request':
+    targetPage =  BloodRequestForm();
+    break;
 
     default:
       ScaffoldMessenger.of(context).showSnackBar(
@@ -184,39 +143,7 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      // drawer: Drawer(
-      //   child: ListView(
-      //     padding: EdgeInsets.zero,
-      //     children: [
-      //       DrawerHeader(
-      //         decoration: const BoxDecoration(color: Colors.teal),
-      //         child: Column(
-      //           crossAxisAlignment: CrossAxisAlignment.start,
-      //           children: const [
-      //             CircleAvatar(
-      //               backgroundColor: Colors.white,
-      //               radius: 28,
-      //               child: Icon(Icons.person, size: 40, color: Colors.teal),
-      //             ),
-      //             SizedBox(height: 10),
-      //             Text('Welcome, User!',
-      //                 style: TextStyle(color: Colors.white, fontSize: 20)),
-      //           ],
-      //         ),
-      //       ),
-      //       ListTile(
-      //         leading: const Icon(Icons.settings),
-      //         title: const Text('Settings'),
-      //         onTap: () {},
-      //       ),
-      //       ListTile(
-      //         leading: const Icon(Icons.help_outline),
-      //         title: const Text('Help & Support'),
-      //         onTap: () {},
-      //       ),
-      //     ],
-      //   ),
-      // ),
+  
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -290,27 +217,9 @@ class HomePage extends StatelessWidget {
                   'View Alert',
                   Colors.black,
                 ),
+                _buildFeatureCard(context, Icons.bloodtype, 'Blood request', Colors.red)
               ],
             ),
-            // const SizedBox(height: 24),
-
-            // // --- Recent Bookings Section ---
-            // Text('Recent Bookings',
-            //     style: Theme.of(context)
-            //         .textTheme
-            //         .titleMedium
-            //         ?.copyWith(fontWeight: FontWeight.bold)),
-            // const SizedBox(height: 8),
-            // _buildRecentBooking(
-            //   'Vehicle: Taxi to Airport',
-            //   'Booked on 8 Nov 2025 • Status: Confirmed',
-            //   Icons.directions_car,
-            // ),
-            // _buildRecentBooking(
-            //   'Doctor: Dr. Jane Smith (Cardiologist)',
-            //   'Booked on 6 Nov 2025 • Status: Completed',
-            //   Icons.local_hospital,
-            // ),
           ],
         ),
       ),
