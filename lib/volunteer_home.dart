@@ -335,7 +335,7 @@ class _VolunteerModulePageState extends State<VolunteerModulePage> {
             context,
             title: "Notifications & Alerts",
             icon: Icons.notifications_active,
-            page: VolunteerNotificationsPage(),
+            page: VolunteerNotificationsPage(currentLat: volunteerLat!, currentLng: volunteerLon!,),
           ),
           _buildCard(
             context,

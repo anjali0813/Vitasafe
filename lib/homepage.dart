@@ -8,6 +8,7 @@ import 'package:vitasafe/complaint.dart';
 import 'package:vitasafe/doctorbookinghistory.dart';
 import 'package:vitasafe/hospitalview.dart';
 import 'package:vitasafe/login.dart';
+import 'package:vitasafe/prediction.dart';
 import 'package:vitasafe/vehiclebookinghistory.dart';
 import 'package:vitasafe/vehicleview.dart';
 import 'package:vitasafe/viewhospitalbed.dart';
@@ -56,12 +57,15 @@ class HomePage extends StatelessWidget {
       );
       return;
 
-    case 'View Alert':
-      targetPage = const AlertViewPage();
-      break;
+    // case 'View Alert':
+    //   targetPage = const AlertViewPage();
+    //   break;
     case 'Blood request':
     targetPage =  BloodRequestForm();
     break;
+    case 'Predict Disease':
+      targetPage =  FirstAidChatBotPage();
+      break;
 
     default:
       ScaffoldMessenger.of(context).showSnackBar(
@@ -211,13 +215,19 @@ class HomePage extends StatelessWidget {
                   'Complaints',
                   Colors.orange,
                 ),
+                // _buildFeatureCard(
+                //   context,
+                //   Icons.warning,
+                //   'View Alert',
+                //   Colors.black,
+                // ),
+                _buildFeatureCard(context, Icons.bloodtype, 'Blood request', Colors.red),
                 _buildFeatureCard(
                   context,
-                  Icons.warning,
-                  'View Alert',
-                  Colors.black,
+                  Icons.chat,
+                  'Predict Disease',
+                  Colors.blue,
                 ),
-                _buildFeatureCard(context, Icons.bloodtype, 'Blood request', Colors.red)
               ],
             ),
           ],
