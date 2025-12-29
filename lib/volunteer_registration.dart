@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:vitasafe/volunteer_reg_api.dart';
 
 class VolunteerRegistrationPage extends StatefulWidget {
+  const VolunteerRegistrationPage({super.key});
+
   @override
   _VolunteerRegistrationPageState createState() => _VolunteerRegistrationPageState();
 }
@@ -153,7 +155,7 @@ Future<void> _pickImage() async {
               SizedBox(height: 16),
 
               DropdownButtonFormField<String>(
-              value: selectedGender,
+              initialValue: selectedGender,
               items: genderList.map((String gender){
                 return DropdownMenuItem<String>(
                   value: gender,

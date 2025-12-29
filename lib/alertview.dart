@@ -4,7 +4,7 @@ import 'package:vitasafe/login_api.dart';
 import 'package:vitasafe/reg_api.dart';
 
 class AlertViewPage extends StatefulWidget {
-  const AlertViewPage({Key? key}) : super(key: key);
+  const AlertViewPage({super.key});
 
   @override
   State<AlertViewPage> createState() => _AlertViewPageState();

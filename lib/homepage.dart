@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vitasafe/Doctorview.dart';
-import 'package:vitasafe/VehicleBook.dart';
-import 'package:vitasafe/alertview.dart';
 import 'package:vitasafe/bedbookinghistory.dart';
 import 'package:vitasafe/bloodrequest.dart';
 import 'package:vitasafe/complaint.dart';
@@ -10,7 +7,6 @@ import 'package:vitasafe/hospitalview.dart';
 import 'package:vitasafe/login.dart';
 import 'package:vitasafe/prediction.dart';
 import 'package:vitasafe/vehiclebookinghistory.dart';
-import 'package:vitasafe/vehicleview.dart';
 import 'package:vitasafe/viewhospitalbed.dart';
 import 'package:vitasafe/viewhospitalsambulance.dart';
 
@@ -101,7 +97,7 @@ class HomePage extends StatelessWidget {
                 title,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: color,
                 ),
@@ -169,7 +165,7 @@ class HomePage extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 2,
-              crossAxisSpacing: 16,
+              crossAxisSpacing: 14,
               mainAxisSpacing: 16,
               children: [
                 _buildFeatureCard(

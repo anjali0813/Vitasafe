@@ -7,7 +7,7 @@ import 'package:vitasafe/Doctorview.dart';
 import 'package:vitasafe/reg_api.dart';
 
 class HospitalView extends StatefulWidget {
-  const HospitalView({Key? key}) : super(key: key);
+  const HospitalView({super.key});
 
   @override
   State<HospitalView> createState() => _HospitalViewState();

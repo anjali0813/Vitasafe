@@ -1,14 +1,83 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:vitasafe/fcm_service.dart';
 import 'package:vitasafe/login_api.dart';
+import 'package:vitasafe/main.dart';
 import 'package:vitasafe/public.dart';
 import 'package:vitasafe/register.dart';
 import 'package:vitasafe/volunteer_registration.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
    LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+
+  Future<void> requestPermission() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+}
+
+void initFCMListeners() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      final alert = message.notification?.body ?? 'Emergency Alert';
+
+      notificationsPlugin.show(
+  DateTime.now().millisecondsSinceEpoch ~/ 1000,
+  '🚨 VitaSafe Alert',
+  alert,
+  const NotificationDetails(
+    android: AndroidNotificationDetails(
+      'alert_channel',
+      'Alerts',
+      importance: Importance.max,
+      priority: Priority.high,
+    ),
+  ),
+);
+
+    });
+  }
+
+//   void sendTokenToBackend(String volunteerId) async {
+//   String? token = await FCMService.getToken();
+
+//   if (token == null) {
+//     print("❌ FCM token null");
+//     return;
+//   }
+
+//   print("📱 FCM TOKEN: $token");
+
+//   await saveVolunteerFCMToken(
+//     volunteerId: volunteerId,
+//     fcmToken: token,
+//   );
+// }
+
+
+
   TextEditingController username = TextEditingController();
+
   TextEditingController password = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    requestPermission();
+    initFCMListeners();       // start listening
+    
+  }
 
   @override
   Widget build(BuildContext context) {

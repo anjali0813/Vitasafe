@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:vitasafe/reg_api.dart';
 
 class RegisterScreen extends StatefulWidget {
-  RegisterScreen({super.key});
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -131,7 +131,7 @@ Future<void> _pickImage() async {
               //               filled: true,
               //              ),    
             DropdownButtonFormField<String>(
-              value: selectedGender,
+              initialValue: selectedGender,
               items: genderList.map((String gender){
                 return DropdownMenuItem<String>(
                   value: gender,

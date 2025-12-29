@@ -9,11 +9,11 @@ class DoctorBookingPage extends StatefulWidget {
   final String specialization;
 
   const DoctorBookingPage({
-    Key? key,
+    super.key,
     required this.doctorId,
     required this.doctorName,
     required this.specialization,
-  }) : super(key: key);
+  });
 
   @override
   State<DoctorBookingPage> createState() => _DoctorBookingPageState();

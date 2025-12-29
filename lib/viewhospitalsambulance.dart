@@ -8,7 +8,7 @@ import 'package:vitasafe/reg_api.dart';
 import 'package:vitasafe/vehicleview.dart';
 
 class NearbyhospitalAmbulance extends StatefulWidget {
-  const NearbyhospitalAmbulance({Key? key}) : super(key: key);
+  const NearbyhospitalAmbulance({super.key});
 
   @override
   State<NearbyhospitalAmbulance> createState() => _NearbyhospitalAmbulanceState();

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "341954779182",
+    "project_id": "vitasafe-d89b3",
+    "storage_bucket": "vitasafe-d89b3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:341954779182:android:dbfc72d5a913e7a0b527bf",
+        "android_client_info": {
+          "package_name": "com.example.vitasafe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1yJauEjsR0YH04t3BO3TbAyojTqj9qMA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

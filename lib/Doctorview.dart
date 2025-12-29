@@ -8,10 +8,10 @@ class HospitalDoctorsPage extends StatefulWidget {
   final String hospitalName;
 
   const HospitalDoctorsPage({
-    Key? key,
+    super.key,
     required this.hospitalId,
     required this.hospitalName,
-  }) : super(key: key);
+  });
 
   @override
   State<HospitalDoctorsPage> createState() => _HospitalDoctorsPageState();

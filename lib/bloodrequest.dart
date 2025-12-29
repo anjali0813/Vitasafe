@@ -4,6 +4,8 @@ import 'package:vitasafe/login_api.dart';
 import 'package:vitasafe/reg_api.dart';
 
 class BloodRequestForm extends StatefulWidget {
+  const BloodRequestForm({super.key});
+
   @override
   _BloodRequestFormState createState() => _BloodRequestFormState();
 }
@@ -81,7 +83,7 @@ class _BloodRequestFormState extends State<BloodRequestForm> {
               /// Blood Group
               DropdownButtonFormField(
                 decoration: InputDecoration(labelText: 'Blood Group'),
-                value: bloodGroup,
+                initialValue: bloodGroup,
                 items: bloodGroups.map((group) {
                   return DropdownMenuItem(
                     value: group,

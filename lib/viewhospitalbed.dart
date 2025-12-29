@@ -9,7 +9,7 @@ import 'package:vitasafe/vehicleview.dart';
 import 'package:vitasafe/viewbeds.dart';
 
 class NearbyhospitalBed extends StatefulWidget {
-  const NearbyhospitalBed({Key? key}) : super(key: key);
+  const NearbyhospitalBed({super.key});
 
   @override
   State<NearbyhospitalBed> createState() => _NearbyhospitalBedState();

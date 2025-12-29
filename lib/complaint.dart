@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:vitasafe/login_api.dart';
 import 'package:vitasafe/reg_api.dart';
 
