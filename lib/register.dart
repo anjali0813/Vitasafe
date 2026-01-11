@@ -46,8 +46,9 @@ Future<void> _pickImage() async {
     return Scaffold(
       appBar:AppBar(
         title: Text('Register Screen'),
+        backgroundColor: Colors.teal,
         centerTitle: true,
-        backgroundColor: Color.fromARGB(0, 173, 173, 234),
+        // backgroundColor: Color.fromARGB(0, 173, 173, 234),
       ),
       body:
       Padding(
@@ -71,11 +72,9 @@ Future<void> _pickImage() async {
                         )
                         :null,
                        ),
-
-                       
                       ),
 
-
+                      SizedBox(height: 40,),
                         TextFormField(
                           controller: name,
                 decoration: InputDecoration(
