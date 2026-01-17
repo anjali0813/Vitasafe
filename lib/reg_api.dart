@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-String baseurl ='http://192.168.1.171:5000';
+String baseurl ='http://12.0.0.165:5000';
 Dio dio = Dio();
 
 Future<String?> registerUser({
@@ -17,6 +17,7 @@ Future<String?> registerUser({
   required String address,
   required String contacno,
   required File? photo,
+  required String bloodGroup,
   context
 }) async {
   try {
@@ -32,6 +33,7 @@ Future<String?> registerUser({
       'Contact_no':contacno,
       if(photo !=null)
       'Photo': await MultipartFile.fromFile(photo.path, filename: photo.path.split('/').last),
+      'Blood_Group':bloodGroup
     });
 
     final response = await dio.post('$baseurl/User_Registration', data:formData);
