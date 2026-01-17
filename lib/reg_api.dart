@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-String baseurl ='http://192.168.1.176:5000';
+String baseurl ='http://192.168.1.171:5000';
 Dio dio = Dio();
 
 Future<String?> registerUser({
@@ -38,6 +39,7 @@ Future<String?> registerUser({
     if(response.statusCode == 200 || response.statusCode == 201)
     {
       Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Registration Successful!')));
       return "Registration Successful!";
     }
     else

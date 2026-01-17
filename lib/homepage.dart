@@ -6,6 +6,7 @@ import 'package:vitasafe/doctorbookinghistory.dart';
 import 'package:vitasafe/hospitalview.dart';
 import 'package:vitasafe/login.dart';
 import 'package:vitasafe/prediction.dart';
+import 'package:vitasafe/userviewvolunteers.dart';
 import 'package:vitasafe/vehiclebookinghistory.dart';
 import 'package:vitasafe/viewhospitalbed.dart';
 import 'package:vitasafe/viewhospitalsambulance.dart';
@@ -53,9 +54,10 @@ class HomePage extends StatelessWidget {
       );
       return;
 
-    // case 'View Alert':
-    //   targetPage = const AlertViewPage();
-    //   break;
+    case 'Nearby Volunteers':
+    targetPage = const NearbyVolunteersPage();
+    break;
+
     case 'Blood request':
     targetPage =  BloodRequestForm();
     break;
@@ -224,6 +226,13 @@ class HomePage extends StatelessWidget {
                   'Predict Disease',
                   Colors.blue,
                 ),
+                _buildFeatureCard(
+                  context,
+                  Icons.volunteer_activism,
+                  'Nearby Volunteers',
+                  Colors.green,
+                ),
+
               ],
             ),
           ],
