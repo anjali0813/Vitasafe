@@ -170,12 +170,9 @@
 //     );
 //   }
 // }
-
-
-
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:vitasafe/reg_api.dart';
+import 'package:vitasafe/reg_api.dart'; // contains baseurl
 
 class BloodDonationVolunteerPage extends StatefulWidget {
   final int volunteerId;
@@ -194,492 +191,109 @@ class _BloodDonationVolunteerPageState
     extends State<BloodDonationVolunteerPage> {
   List<dynamic> requests = [];
   bool isLoading = true;
-  String? errorMessage;
-  Set<int> processingRequests = {};
 
   final Dio dio = Dio();
 
   @override
   void initState() {
     super.initState();
-    _validateVolunteerId();
     fetchBloodRequests();
   }
 
-  void _validateVolunteerId() {
-    if (widget.volunteerId <= 0) {
-      setState(() {
-        errorMessage = 'Invalid volunteer ID';
-        isLoading = false;
-      });
-    }
-  }
-
+  /// 🔹 Fetch blood requests (backend filters within 5 km)
   Future<void> fetchBloodRequests() async {
-    if (widget.volunteerId <= 0) return;
-
-    setState(() {
-      isLoading = true;
-      errorMessage = null;
-    });
-
     try {
       final response = await dio.get(
         "$baseurl/requests",
         queryParameters: {"volunteer_id": widget.volunteerId},
-        options: Options(
-          validateStatus: (status) => status! < 500,
-          receiveTimeout: const Duration(seconds: 15),
-          sendTimeout: const Duration(seconds: 15),
-        ),
       );
 
       if (response.statusCode == 200) {
-        final data = response.data;
-        
-        if (data is List) {
-          setState(() {
-            requests = data;
-            isLoading = false;
-          });
-        } else if (data is Map && data.containsKey('requests')) {
-          setState(() {
-            requests = data['requests'] ?? [];
-            isLoading = false;
-          });
-        } else {
-          throw Exception('Invalid response format');
-        }
-      } else {
-        throw Exception('Server error: ${response.statusCode}');
-      }
-    } on DioException catch (e) {
-      String message = 'Failed to fetch blood requests';
-      
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout) {
-        message = 'Connection timeout. Please check your internet connection.';
-      } else if (e.type == DioExceptionType.connectionError) {
-        message = 'No internet connection.';
-      } else if (e.response?.statusCode == 404) {
-        message = 'No blood requests found.';
-      } else if (e.response != null) {
-        message = 'Error: ${e.response?.statusCode}';
-      }
-
-      setState(() {
-        errorMessage = message;
-        isLoading = false;
-      });
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: Colors.red[700],
-          ),
-        );
+        setState(() {
+          requests = response.data;
+          isLoading = false;
+        });
+        print(requests);
       }
     } catch (e) {
-      setState(() {
-        errorMessage = 'An unexpected error occurred';
-        isLoading = false;
-      });
       debugPrint("Fetch error: $e");
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to fetch requests"),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 
-  Future<void> acceptRequest(int? requestId, int index) async {
-    if (requestId == null || requestId <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Invalid request ID")),
-      );
-      return;
-    }
-
-    if (processingRequests.contains(requestId)) {
-      return;
-    }
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Confirm Acceptance"),
-        content: const Text(
-          "Are you sure you want to accept this blood donation request?",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-            ),
-            child: const Text("Accept"),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-
-    setState(() {
-      processingRequests.add(requestId);
-    });
-
+  /// 🔹 Accept a blood request
+  Future<void> acceptRequest(int requestId) async {
     try {
       final response = await dio.post(
         "$baseurl/acceptrequest/$requestId",
         data: {"VolunteerID": widget.volunteerId},
-        options: Options(
-          validateStatus: (status) => status! < 500,
-          receiveTimeout: const Duration(seconds: 15),
-          sendTimeout: const Duration(seconds: 15),
-        ),
       );
 
       if (response.statusCode == 200) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Request accepted successfully!"),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
-        await fetchBloodRequests();
-      } else {
-        throw Exception('Failed to accept request');
-      }
-    } on DioException catch (e) {
-      String message = 'Failed to accept request';
-      
-      if (e.type == DioExceptionType.connectionTimeout) {
-        message = 'Connection timeout. Please try again.';
-      } else if (e.type == DioExceptionType.connectionError) {
-        message = 'No internet connection.';
-      } else if (e.response?.statusCode == 409) {
-        message = 'Request already accepted by another volunteer.';
-      } else if (e.response != null) {
-        message = 'Error: ${e.response?.statusCode}';
-      }
-
-      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(message),
-            backgroundColor: Colors.red[700],
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-      debugPrint("Accept error: $e");
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("An unexpected error occurred"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-      debugPrint("Accept error: $e");
-    } finally {
-      setState(() {
-        processingRequests.remove(requestId);
-      });
-    }
-  }
-
-  Color _getBloodGroupColor(String? bloodGroup) {
-    if (bloodGroup == null) return Colors.redAccent;
-    
-    switch (bloodGroup.toUpperCase()) {
-      case 'A+':
-      case 'A-':
-        return Colors.red[600]!;
-      case 'B+':
-      case 'B-':
-        return Colors.orange[700]!;
-      case 'AB+':
-      case 'AB-':
-        return Colors.purple[600]!;
-      case 'O+':
-      case 'O-':
-        return Colors.pink[700]!;
-      default:
-        return Colors.redAccent;
-    }
-  }
-
-  String _formatCoordinates(dynamic lat, dynamic lng) {
-    try {
-      if (lat == null || lng == null) return 'Location unavailable';
-      
-      final latStr = lat.toString();
-      final lngStr = lng.toString();
-      
-      final latNum = double.parse(latStr);
-      final lngNum = double.parse(lngStr);
-      
-      return '${latNum.toStringAsFixed(4)}, ${lngNum.toStringAsFixed(4)}';
-    } catch (e) {
-      return 'Location unavailable';
-    }
-  }
-
-  Widget _buildStatusChip(String? status) {
-    final isAccepted = status?.toLowerCase() == 'accepted';
-    final isPending = status?.toLowerCase() == 'pending';
-    
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: isAccepted
-            ? Colors.green[50]
-            : isPending
-                ? Colors.orange[50]
-                : Colors.grey[200],
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isAccepted
-              ? Colors.green
-              : isPending
-                  ? Colors.orange
-                  : Colors.grey,
-          width: 1.5,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isAccepted
-                ? Icons.check_circle
-                : isPending
-                    ? Icons.pending
-                    : Icons.help_outline,
-            size: 16,
-            color: isAccepted
-                ? Colors.green
-                : isPending
-                    ? Colors.orange
-                    : Colors.grey,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            status ?? 'Unknown',
-            style: TextStyle(
-              color: isAccepted
-                  ? Colors.green[800]
-                  : isPending
-                      ? Colors.orange[800]
-                      : Colors.grey[700],
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white, size: 20),
+                SizedBox(width: 8),
+                Text("Request Accepted Successfully"),
+              ],
             ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
           ),
-        ],
-      ),
-    );
-  }
-
-  void _showRequestDetails(Map req) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        expand: false,
-        builder: (context, scrollController) => Container(
-          padding: const EdgeInsets.all(20),
-          child: ListView(
-            controller: scrollController,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: _getBloodGroupColor(req['Bloodgroup']),
-                    child: Text(
-                      req['Bloodgroup'] ?? 'N/A',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Blood Request Details',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        _buildStatusChip(req['status']),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              _buildDetailSection(
-                icon: Icons.person,
-                title: 'Patient Information',
-                items: [
-                  _buildDetailItem('Name', req['user_name']),
-                  _buildDetailItem('Contact', req['user_no']),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildDetailSection(
-                icon: Icons.bloodtype,
-                title: 'Blood Details',
-                items: [
-                  _buildDetailItem('Blood Group', req['Bloodgroup']),
-                  _buildDetailItem('Request Status', req['status']),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildDetailSection(
-                icon: Icons.location_on,
-                title: 'Location',
-                items: [
-                  _buildDetailItem(
-                    'Coordinates',
-                    _formatCoordinates(req['user_latitude'], req['user_longitude']),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              if (req['status']?.toLowerCase() != 'accepted')
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: processingRequests.contains(req['id'])
-                        ? null
-                        : () {
-                            Navigator.pop(context);
-                            acceptRequest(req['id'], 0);
-                          },
-                    icon: processingRequests.contains(req['id'])
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Icon(Icons.check_circle),
-                    label: Text(
-                      processingRequests.contains(req['id'])
-                          ? 'Processing...'
-                          : 'Accept Request',
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+        );
+        fetchBloodRequests(); // refresh list
+      }
+    } catch (e) {
+      debugPrint("Accept error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to accept request"),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
         ),
-      ),
-    );
+      );
+    }
   }
 
-  Widget _buildDetailSection({
-    required IconData icon,
-    required String title,
-    required List<Widget> items,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 20, color: Colors.redAccent),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...items,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailItem(String label, dynamic value) {
+  Widget _buildInfoRow(IconData icon, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              '$label:',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 14,
-              ),
-            ),
-          ),
+          Icon(icon, size: 18, color: Colors.grey.shade600),
+          SizedBox(width: 8),
           Expanded(
-            child: Text(
-              value?.toString() ?? 'N/A',
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade800,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -693,267 +307,294 @@ class _BloodDonationVolunteerPageState
       appBar: AppBar(
         title: const Text(
           "Nearby Blood Requests",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
         ),
         backgroundColor: Colors.redAccent,
+        centerTitle: true,
         elevation: 2,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: isLoading ? null : fetchBloodRequests,
-            tooltip: 'Refresh',
-          ),
-        ],
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: RefreshIndicator(
-        onRefresh: fetchBloodRequests,
-        child: _buildBody(),
-      ),
-    );
-  }
-
-  Widget _buildBody() {
-    if (isLoading) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Loading blood requests...',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (errorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Colors.red,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                errorMessage!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16, color: Colors.red),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: fetchBloodRequests,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-              ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.redAccent.withOpacity(0.05),
+              Colors.redAccent.withOpacity(0.02),
             ],
           ),
         ),
-      );
-    }
-
-    if (requests.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.bloodtype_outlined,
-              size: 80,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "No nearby blood requests",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Pull down to refresh",
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: requests.length,
-      itemBuilder: (context, index) {
-        final req = requests[index];
-        final bloodGroup = req['Bloodgroup']?.toString() ?? 'Unknown';
-        final status = req['status']?.toString() ?? 'Unknown';
-        final userName = req['user_name']?.toString() ?? 'Unknown';
-        final userContact = req['user_no']?.toString() ?? 'N/A';
-        final isAccepted = status.toLowerCase() == 'accepted';
-        final isProcessing = processingRequests.contains(req['id']);
-
-        return Card(
-          elevation: 3,
-          margin: const EdgeInsets.only(bottom: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(
-              color: _getBloodGroupColor(bloodGroup).withOpacity(0.3),
-              width: 2,
-            ),
-          ),
-          child: InkWell(
-            onTap: () => _showRequestDetails(req),
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: _getBloodGroupColor(bloodGroup)
-                              .withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: _getBloodGroupColor(bloodGroup),
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            bloodGroup,
-                            style: TextStyle(
-                              color: _getBloodGroupColor(bloodGroup),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
+        child: isLoading
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Colors.redAccent,
+                      strokeWidth: 2.5,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      "Finding nearby blood requests...",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 14,
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              userName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                    ),
+                  ],
+                ),
+              )
+            : requests.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.bloodtype_outlined,
+                          size: 64,
+                          color: Colors.grey.shade400,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          "No Blood Requests Nearby",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 32),
+                          child: Text(
+                            "There are currently no blood donation requests within your 5km radius",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 14,
                             ),
-                            const SizedBox(height: 4),
-                            Row(
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton.icon(
+                          onPressed: fetchBloodRequests,
+                          icon: Icon(Icons.refresh, size: 18),
+                          label: Text("Refresh"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : RefreshIndicator(
+                    color: Colors.redAccent,
+                    onRefresh: fetchBloodRequests,
+                    child: ListView.separated(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: requests.length,
+                      separatorBuilder: (context, index) =>
+                          SizedBox(height: 16),
+                      itemBuilder: (context, index) {
+                        final req = requests[index];
+                        final isAccepted = req['status'] == "Accepted";
+
+                        return Card(
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: isAccepted
+                                  ? Colors.green.shade100
+                                  : Colors.grey.shade200,
+                              width: 1,
+                            ),
+                          ),
+                          color: isAccepted
+                              ? Colors.green.shade50.withOpacity(0.5)
+                              : Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.phone,
-                                    size: 14, color: Colors.grey),
-                                const SizedBox(width: 4),
-                                Text(
-                                  userContact,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey[700],
-                                  ),
+                                // Header with blood group and accept button
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.redAccent.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        Icons.bloodtype,
+                                        color: Colors.redAccent,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Blood Group ${req['Bloodgroup']}",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 18,
+                                              color: Colors.grey.shade800,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: isAccepted
+                                                  ? Colors.green.withOpacity(0.1)
+                                                  : Colors.orange.withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            child: Text(
+                                              req['status'],
+                                              style: TextStyle(
+                                                color: isAccepted
+                                                    ? Colors.green.shade700
+                                                    : Colors.orange.shade700,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: isAccepted
+                                          ? null
+                                          : () => acceptRequest(req['id']),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: isAccepted
+                                            ? Colors.green.shade100
+                                            : Colors.redAccent,
+                                        foregroundColor: isAccepted
+                                            ? Colors.green.shade700
+                                            : Colors.white,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                          vertical: 10,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            isAccepted
+                                                ? Icons.check_circle
+                                                : Icons.bloodtype_outlined,
+                                            size: 16,
+                                          ),
+                                          SizedBox(width: 6),
+                                          Text(
+                                            isAccepted ? "Accepted" : "Accept",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
+                                SizedBox(height: 16),
+                                Divider(height: 1, color: Colors.grey.shade200),
+                                SizedBox(height: 16),
+                                // User information
+                                _buildInfoRow(
+                                  Icons.person,
+                                  "Requester",
+                                  req['user_name'],
+                                ),
+                                _buildInfoRow(
+                                  Icons.phone,
+                                  "Contact Number",
+                                  req['user_no'],
+                                ),
+                                _buildInfoRow(
+                                  Icons.location_on,
+                                  "Location Coordinates",
+                                  "${req['user_latitude']}, ${req['user_longitude']}",
+                                ),
+                                if (isAccepted) ...[
+                                  SizedBox(height: 8),
+                                  Container(
+                                    padding: EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: Colors.green.shade100,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.check_circle,
+                                          color: Colors.green.shade600,
+                                          size: 18,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            "You have accepted this request",
+                                            style: TextStyle(
+                                              color: Colors.green.shade700,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                      _buildStatusChip(status),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  const Divider(height: 1),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Icon(Icons.location_on,
-                                size: 16, color: Colors.grey[600]),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                _formatCoordinates(
-                                    req['user_latitude'], req['user_longitude']),
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey[700],
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      if (!isAccepted)
-                        SizedBox(
-                          height: 36,
-                          child: ElevatedButton(
-                            onPressed: isProcessing
-                                ? null
-                                : () => acceptRequest(req['id'], index),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                            ),
-                            child: isProcessing
-                                ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white),
-                                    ),
-                                  )
-                                : const Text(
-                                    "Accept",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                    ),
-                                  ),
                           ),
-                        ),
-                    ],
+                        );
+                      },
+                    ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: fetchBloodRequests,
+        backgroundColor: Colors.redAccent,
+        foregroundColor: Colors.white,
+        shape: CircleBorder(),
+        child: Icon(Icons.refresh),
+        elevation: 2,
+      ),
     );
   }
 }
